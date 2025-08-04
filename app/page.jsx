@@ -13,9 +13,10 @@ export default async function Page() {
 
   for (const category of categories) {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/news/${category}`, {
-        cache: "no-store",
-      });
+      const res = await fetch(`/api/news/${category}`, {
+  cache: "no-store",
+});
+
       const data = await res.json();
       articlesByCategory[category] = data.articles || [];
       await delay(1000); // Optional: delay 1s between requests to avoid rate limit

@@ -3,9 +3,10 @@ import { NewsCard } from "@/components/News-Card";
 export default async function NewsPage({ params }) {
   const category = params.category;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/news/${category}`, {
-    cache: "no-store",
-  });
+const res = await fetch(`/api/news/${category}`, {
+  cache: "no-store",
+});
+
 
   const data = await res.json();
   const articles = data.articles || [];
