@@ -12,9 +12,8 @@ export default async function Page() {
 
   // ✅ Dynamically set base URL for server-side fetch
   const baseUrl =
-    process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000";
+  process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
 
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
