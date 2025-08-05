@@ -3,9 +3,18 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 
+// ✅ Force server to fetch fresh data every time
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const categories = ["business", "crime", "technology", "entertainment", "science"];
   const articlesByCategory = {};
+
+  // ✅ Dynamically set base URL for server-side fetch
+  const baseUrl =
+    process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
 
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -13,33 +22,26 @@ export default async function Page() {
 
   for (const category of categories) {
     try {
-      const res = await fetch(`/api/news/${category}`, {
-  cache: "no-store",
-});
+      const res = await fetch(`${baseUrl}/api/news/${category}`, {
+        cache: "no-store",
+      });
 
       const data = await res.json();
       articlesByCategory[category] = data.articles || [];
-      await delay(1000); // Optional: delay 1s between requests to avoid rate limit
+      await delay(1000); // Optional: delay between calls
     } catch (err) {
       console.error(`Error fetching ${category}:`, err);
       articlesByCategory[category] = [];
     }
   }
 
-  // Extract each category's articles
-  const businessArticles = articlesByCategory["business"];
-  const crimeArticles = articlesByCategory["crime"];
-  const techArticles = articlesByCategory["technology"];
-  const entertainmentArticles = articlesByCategory["entertainment"];
-  const scienceArticles = articlesByCategory["science"];
-
   return (
     <main className="bg-black container space-y-10 py-8">
-      <CategorySection title="Business" articles={businessArticles} />
-      <CategorySection title="Crime" articles={crimeArticles} />
-      <CategorySection title="Technology" articles={techArticles} />
-      <CategorySection title="Entertainment" articles={entertainmentArticles} />
-      <CategorySection title="Science" articles={scienceArticles} />
+      <CategorySection title="Business" articles={articlesByCategory["business"]} />
+      <CategorySection title="Crime" articles={articlesByCategory["crime"]} />
+      <CategorySection title="Technology" articles={articlesByCategory["technology"]} />
+      <CategorySection title="Entertainment" articles={articlesByCategory["entertainment"]} />
+      <CategorySection title="Science" articles={articlesByCategory["science"]} />
     </main>
   );
 }
@@ -59,7 +61,7 @@ function CategorySection({ title, articles }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 px-2">
         {articles
-          .filter((item) => item.image) // Only render articles with images
+          .filter((item) => item.image)
           .slice(0, 3)
           .map((item) => (
             <NewsCard
